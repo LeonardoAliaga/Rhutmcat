@@ -6,8 +6,8 @@ const { Kazagumo, Plugins } = require("kazagumo");
 const node = [
   {
     name: "pruebaxd",
-    url: "lavalink-v2.pericsq.ro:443",
-    auth: "wwweasycodero",
+    url: "lava-v4.ajieblogs.eu.org:443",
+    auth: "https://dsc.gg/ajidevserver",
     secure: true,
   },
 ];
@@ -37,18 +37,18 @@ module.exports = (discordClient) => {
       `Lavalink ${name}: Closed, Code ${code}, Reason ${reason || "No reason"}`
     )
   );
-  kazagumo.shoukaku.on("debug", (name, info) =>
-    console.debug(`Lavalink ${name}: Debug,`, info)
-  );
-  kazagumo.shoukaku.on("disconnect", (name, count) => {
-    const players = [...kazagumo.shoukaku.players.values()].filter(
-      (p) => p.node.name === name
-    );
-    players.map((player) => {
-      kazagumo.destroyPlayer(player.guildId);
-      player.destroy();
-    });
-    console.warn(`Lavalink ${name}: Disconnected`);
-  });
+  // kazagumo.shoukaku.on("debug", (name, info) =>
+  //   console.debug(`Lavalink ${name}: Debug,`, info)
+  // );
+  // kazagumo.shoukaku.on("disconnect", (name, count) => {
+  //   const players = [...kazagumo.shoukaku.players.values()].filter(
+  //     (p) => p.node.name === name
+  //   );
+  //   players.map((player) => {
+  //     kazagumo.destroyPlayer(player.guildId);
+  //     player.destroy();
+  //   });
+  //   console.warn(`Lavalink ${name}: Disconnected`);
+  // });
   discordClient.kazagumo = kazagumo;
 };

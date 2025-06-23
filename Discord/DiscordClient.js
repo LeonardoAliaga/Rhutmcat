@@ -5,6 +5,25 @@ const fs = require("fs");
 const { Kazagumo } = require("kazagumo");
 const path = require("path");
 
+// const WebSocket = require("ws");
+// const ws = new WebSocket("ws://192.168.0.6:33740/livetimingapi/");
+
+// ws.on("open", () => {
+//   console.log("Conexión abierta a la PS4!");
+// });
+
+// ws.on("message", (data) => {
+//   console.log("Mensaje recibido:", data.toString());
+// });
+
+// ws.on("error", (err) => {
+//   console.error("Error de conexión:", err.message);
+// });
+
+// ws.on("close", () => {
+//   console.log("Conexión cerrada");
+// });
+
 //Definiendo e iniciando clientes
 const discordClient = new Discord.Client({
   intents: [
