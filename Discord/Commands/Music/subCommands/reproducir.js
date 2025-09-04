@@ -10,17 +10,9 @@ const {
 } = require("discord.js");
 
 module.exports = {
-  async execute(interaction) {
-    const discordClient = interaction.client;
+  async execute(interaction, discordClient) {
     const kazagumo = discordClient.kazagumo;
     const { options, member, channel, guild, user } = interaction;
-
-    if (!kazagumo) {
-      return interaction.reply({
-        content: "Kazagumo no está inicializado.",
-        ephemeral: true,
-      });
-    }
 
     // Aquí sigue el código de "reproducir" que ya tienes...
 

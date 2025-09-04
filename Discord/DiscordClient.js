@@ -49,6 +49,9 @@ discordClient.utils = {
   },
 };
 
+// Inicializar Kazagumo
+require("./musicManager")(discordClient);
+
 //Command Handler
 discordClient.commands = new Discord.Collection();
 const foldersPath = path.join(__dirname, "Commands");
@@ -72,9 +75,6 @@ for (const folder of commandFolders) {
     }
   }
 }
-
-// Inicializar Kazagumo
-require("./musicManager")(discordClient);
 
 // Cargar eventos generales
 const clientEventsPath = path.join(__dirname, "Events", "Client");
@@ -124,45 +124,44 @@ const commands = discordClient.commands.map((command) => command.data.toJSON());
 
 (async () => {
   try {
-  console.log("Started refreshing application (/) commands.");
+    console.log("Started refreshing application (/) commands.");
 
-  await rest.put(
-    Routes.applicationCommands(process.env.CLIENT_ID),
-    { body: commands }
-  );
+    await rest.put(Routes.applicationCommands(process.env.CLIENT_ID), {
+      body: commands,
+    });
 
     console.log("Successfully reloaded application (/) commands.");
 
-  // Mostrar tabla de comandos y subcomandos registrados
-  const chalk = require("chalk").default;
-console.log(chalk.bold.green('\n📋 Comandos Slash Registrados\n'));
+    // Mostrar tabla de comandos y subcomandos registrados
+    const chalk = require("chalk").default;
+    console.log(chalk.bold.green("\n📋 Comandos Slash Registrados\n"));
 
-const table = [];
+    const table = [];
 
-for (const [name, command] of discordClient.commands) {
-  const data = command.data?.toJSON?.();
+    for (const [name, command] of discordClient.commands) {
+      const data = command.data?.toJSON?.();
 
-  if (!data) continue;
+      if (!data) continue;
 
-  // Verifica si tiene subcomandos
-  const subcommands = data.options?.filter(opt => opt.type === 1); // type 1 = SUB_COMMAND
+      // Verifica si tiene subcomandos
+      const subcommands = data.options?.filter((opt) => opt.type === 1); // type 1 = SUB_COMMAND
 
-  if (subcommands && subcommands.length > 0) {
-    for (const sub of subcommands) {
-      table.push({ Comando: `✅ /${data.name} ${sub.name}` });
+      if (subcommands && subcommands.length > 0) {
+        for (const sub of subcommands) {
+          table.push({ Comando: `✅ /${data.name} ${sub.name}` });
+        }
+      } else {
+        table.push({ Comando: `✅ /${data.name}` });
+      }
     }
-  } else {
-    table.push({ Comando: `✅ /${data.name}` });
+
+    console.table(table);
+    console.log(
+      chalk.yellow(`\nTotal: ${table.length} comandos registrados\n`)
+    );
+  } catch (error) {
+    console.error(error);
   }
-}
-
-console.table(table);
-console.log(chalk.yellow(`\nTotal: ${table.length} comandos registrados\n`));
-
-
-} catch (error) {
-  console.error(error);
-}
 })();
 
 module.exports = discordClient;

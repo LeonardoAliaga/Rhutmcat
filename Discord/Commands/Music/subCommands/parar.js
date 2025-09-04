@@ -10,8 +10,7 @@ const {
 } = require("discord.js");
 
 module.exports = {
-  async execute(interaction) {
-    const discordClient = interaction.client;
+  async execute(interaction, discordClient) {
     const kazagumo = discordClient.kazagumo;
     const { options, member, channel, guild, user } = interaction;
 
@@ -23,12 +22,11 @@ module.exports = {
     }
 
     // Aquí sigue el código de "reproducir" que ya tienes...
-    
-        player = kazagumo.getPlayer(guild.id);
 
-        if (!player)
-          return interaction.reply("No se está reproduciendo musica");
-        await player.destroy();
-        await interaction.reply("Listo.");
+    player = kazagumo.getPlayer(guild.id);
+
+    if (!player) return interaction.reply("No se está reproduciendo musica");
+    await player.destroy();
+    await interaction.reply("Listo.");
   },
 };

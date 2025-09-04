@@ -8,7 +8,6 @@ const {
   StringSelectMenuOptionBuilder,
   StringSelectMenuBuilder,
 } = require("discord.js");
-const path = require('path');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -44,19 +43,13 @@ module.exports = {
         .setDescription("Continua escuchando tu canción")
     ),
 
-  /**
-   *
-   * @param {ChatInputCommandInteraction} interaction
-   * @param {Kazagumo} [kazagumo = discordClient.kazagumo]
-   * @param {Client} discordClient
-   */
-
   async execute(interaction) {
+    const discordClient = interaction.client;
     const subcommand = interaction.options.getSubcommand();
 
     try {
       const subcommandFile = require(`./subcommands/${subcommand}.js`);
-      await subcommandFile.execute(interaction);
+      await subcommandFile.execute(interaction, discordClient);
     } catch (err) {
       console.error(`Error al ejecutar subcomando ${subcommand}:`, err);
       await interaction.reply({

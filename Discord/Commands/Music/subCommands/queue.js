@@ -10,8 +10,7 @@ const {
 } = require("discord.js");
 
 module.exports = {
-  async execute(interaction) {
-    const discordClient = interaction.client;
+  async execute(interaction, discordClient) {
     const kazagumo = discordClient.kazagumo;
     const { options, member, channel, guild, user } = interaction;
 
