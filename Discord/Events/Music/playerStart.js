@@ -5,7 +5,7 @@ module.exports = {
   name: "playerStart",
   once: false, // 👈 ¡Esta línea es importante!
   async execute(player, track, c) {
-    console.log(track);
+    // console.log(track);
     console.log(
       `Now playing ${color.bgMagenta(track.title)} by ${color.blue(
         track.author

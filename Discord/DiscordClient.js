@@ -1,3 +1,4 @@
+const { Routes } = require("discord.js");
 const Discord = require("discord.js");
 require("dotenv").config();
 
@@ -5,26 +6,6 @@ const fs = require("fs");
 const { Kazagumo } = require("kazagumo");
 const path = require("path");
 
-// const WebSocket = require("ws");
-// const ws = new WebSocket("ws://192.168.0.6:33740/livetimingapi/");
-
-// ws.on("open", () => {
-//   console.log("Conexión abierta a la PS4!");
-// });
-
-// ws.on("message", (data) => {
-//   console.log("Mensaje recibido:", data.toString());
-// });
-
-// ws.on("error", (err) => {
-//   console.error("Error de conexión:", err.message);
-// });
-
-// ws.on("close", () => {
-//   console.log("Conexión cerrada");
-// });
-
-//Definiendo e iniciando clientes
 const discordClient = new Discord.Client({
   intents: [
     Discord.GatewayIntentBits.Guilds,
@@ -33,6 +14,40 @@ const discordClient = new Discord.Client({
     Discord.GatewayIntentBits.GuildVoiceStates,
   ],
 });
+
+discordClient.utils = {
+  /**
+   * Formatea una duración en milisegundos a un formato MM:SS.
+   * @param {number} ms - Duración en milisegundos.
+   * @returns {string} Duración formateada (MM:SS).
+   */
+  formatDuration: (ms) => {
+    if (isNaN(ms) || ms < 0) return "00:00"; // Manejar casos inválidos
+
+    const seconds = Math.floor((ms / 1000) % 60);
+    const minutes = Math.floor((ms / (1000 * 60)) % 60);
+    const hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
+    const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+
+    const parts = [];
+    if (days > 0) parts.push(String(days).padStart(2, "0"));
+    if (hours > 0 || days > 0) parts.push(String(hours).padStart(2, "0")); // Include hours if any, or if there are days
+    parts.push(String(minutes).padStart(2, "0"));
+    parts.push(String(seconds).padStart(2, "0"));
+
+    // Si hay horas o días, el formato será HH:MM:SS o DD:HH:MM:SS
+    if (hours > 0 || days > 0) {
+      return `${String(hours + days * 24).padStart(2, "0")}:${String(
+        minutes
+      ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    }
+    // De lo contrario, MM:SS
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+      2,
+      "0"
+    )}`;
+  },
+};
 
 //Command Handler
 discordClient.commands = new Discord.Collection();
@@ -106,29 +121,48 @@ const rest = new Discord.REST().setToken(process.env.TOKEN);
 // console.log(client.commands.data)
 
 const commands = discordClient.commands.map((command) => command.data.toJSON());
-// and deploy your commands!
+
 (async () => {
   try {
-    console.log(
-      `Started refreshing ${discordClient.commands.size} application (/) commands.`
-    );
+  console.log("Started refreshing application (/) commands.");
 
-    // The put method is used to fully refresh all commands in the guild with the current set
-    const data = await rest.put(
-      Discord.Routes.applicationGuildCommands(
-        process.env.CLIENT_ID,
-        process.env.SERVER_ID
-      ),
-      { body: commands }
-    );
+  await rest.put(
+    Routes.applicationCommands(process.env.CLIENT_ID),
+    { body: commands }
+  );
 
-    console.log(
-      `Successfully reloaded ${data.length} application (/) commands.`
-    );
-  } catch (error) {
-    // And of course, make sure you catch and log any errors!
-    console.error(error);
+    console.log("Successfully reloaded application (/) commands.");
+
+  // Mostrar tabla de comandos y subcomandos registrados
+  const chalk = require("chalk").default;
+console.log(chalk.bold.green('\n📋 Comandos Slash Registrados\n'));
+
+const table = [];
+
+for (const [name, command] of discordClient.commands) {
+  const data = command.data?.toJSON?.();
+
+  if (!data) continue;
+
+  // Verifica si tiene subcomandos
+  const subcommands = data.options?.filter(opt => opt.type === 1); // type 1 = SUB_COMMAND
+
+  if (subcommands && subcommands.length > 0) {
+    for (const sub of subcommands) {
+      table.push({ Comando: `✅ /${data.name} ${sub.name}` });
+    }
+  } else {
+    table.push({ Comando: `✅ /${data.name}` });
   }
+}
+
+console.table(table);
+console.log(chalk.yellow(`\nTotal: ${table.length} comandos registrados\n`));
+
+
+} catch (error) {
+  console.error(error);
+}
 })();
 
 module.exports = discordClient;
